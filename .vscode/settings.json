@@ -2,6 +2,9 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
+  "[javascript][typescript][svelte][json][jsonc][css][tailwindcss][markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "nix.serverSettings": {
     "nixd": {
       "options": {
