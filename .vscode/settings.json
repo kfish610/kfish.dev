@@ -1,5 +1,14 @@
 {
-	"files.associations": {
-		"*.css": "tailwindcss"
-	}
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "nix.serverSettings": {
+    "nixd": {
+      "options": {
+        "cv": {
+          "expr": "(builtins.getFlake (toString ./.)).lib.cv.options"
+        }
+      }
+    }
+  }
 }
