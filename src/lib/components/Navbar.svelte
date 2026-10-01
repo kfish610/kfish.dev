@@ -2,10 +2,10 @@
   import { afterNavigate } from '$app/navigation';
   import { resolve } from '$app/paths';
   import icon from '$lib/assets/cogs-transparent-big.png';
-  import IconBars from '~icons/fa7-solid/bars';
-  import IconEnvelope from '~icons/fa7-solid/envelope';
   import IconGithub from '~icons/fa7-brands/github';
   import IconLinkedin from '~icons/fa7-brands/linkedin';
+  import IconBars from '~icons/fa7-solid/bars';
+  import IconEnvelope from '~icons/fa7-solid/envelope';
 
   let categories: string[] = [
     'About',
