@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DeterminateSystems/nix-installer-action@v23
+      - run: nix develop --command npm ci
+      - run: nix develop --command pre-commit run --all-files --show-diff-on-failure
+      - run: nix develop --command pre-commit run --all-files --hook-stage pre-push

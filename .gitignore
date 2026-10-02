@@ -1,5 +1,9 @@
 node_modules
 
+# Nix
+.direnv
+.pre-commit-config.yaml
+
 # Output
 .output
 .vercel
