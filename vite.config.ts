@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { promisify } from 'node:util';
 
@@ -10,36 +10,37 @@ import { defineConfig, type Plugin, type ViteDevServer } from 'vite';
 
 const run = promisify(execFile);
 
-function nixtojson(attr: string, name: string): Plugin {
+function nixbuild(attr: string, path: string): Plugin {
   let server: ViteDevServer | undefined;
-  const path = 'src/lib/generated/' + name;
 
   async function generate() {
     try {
-      const { stdout } = await run('nix', ['eval', '--json', attr]);
+      const { stdout } = await run('nix', ['build', '--no-link', '--print-out-paths', attr]);
+      const contents = await readFile(stdout.trim());
       await mkdir(dirname(path), { recursive: true });
-      await writeFile(path, stdout);
+      await writeFile(path, contents);
     } catch (e) {
       if (!server) throw e;
-      const message = `nixtojson ${attr}:\n${(e as { stderr?: string }).stderr || e}`;
+      const message = `nix build ${attr}:\n${(e as { stderr?: string }).stderr || e}`;
       server.config.logger.error(message);
       server.ws.send({ type: 'error', err: { message, stack: '' } });
     }
   }
 
   return {
-    name: `nix-to-json:${name}`,
+    name: `nix-build:${path}`,
     buildStart: generate,
     configureServer(s) {
       server = s;
-      s.watcher.on('change', (file) => /(\.nix|flake\.lock)$/.test(file) && generate());
+      s.watcher.on('change', (file) => /(\.nix|\.typ|flake\.lock)$/.test(file) && generate());
     },
   };
 }
 
 export default defineConfig({
   plugins: [
-    nixtojson('.#lib.cv.config', 'cv.json'),
+    nixbuild('.#cv-json', 'src/lib/generated/cv.json'),
+    nixbuild('.#cv-pdf', 'static/cv.pdf'),
     sveltekit(),
     tailwindcss(),
     unplugin({

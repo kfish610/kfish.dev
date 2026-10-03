@@ -93,7 +93,6 @@ let
   highlight = types.submodule {
     options = {
       text = str;
-      details = optional types.str;
       links = mkOption {
         type = types.listOf link;
         default = [ ];
@@ -134,6 +133,7 @@ in
         options = {
           name = str;
           email = str;
+          website = mkOption { type = url; };
           links = mkOption {
             type = types.listOf link;
             default = [ ];
@@ -146,6 +146,7 @@ in
               };
             };
           };
+          skills = refs [ "skill" ];
         };
       };
     };

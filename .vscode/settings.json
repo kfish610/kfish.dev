@@ -1,4 +1,7 @@
 {
+  "material-icon-theme.folders.associations": {
+    "cv": "docs"
+  },
   "files.associations": {
     "*.css": "tailwindcss"
   },
@@ -13,5 +16,7 @@
         }
       }
     }
-  }
+  },
+  "tinymist.formatterMode": "typstyle",
+  "tinymist.formatterPrintWidth": 100
 }

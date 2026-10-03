@@ -12,6 +12,7 @@ node_modules
 /.svelte-kit
 /build
 /src/lib/generated
+/static/cv.pdf
 
 # OS
 .DS_Store

@@ -3,6 +3,7 @@
   person = {
     name = "Kevin Fisher";
     email = "kf23@illinois.edu";
+    website = "https://kfish.dev";
     links = [
       {
         label = "GitHub";
@@ -17,6 +18,21 @@
       long = "";
       short = "Seeking research opportunities in order to gain further research experience, to contribute my interest in and knowledge of computer science and mathematics, and to help build tools that assist humans with proofs.";
     };
+    skills = with config.skills; [
+      programming.python
+      programming.csharp
+      programming.cpp
+      programming.r
+      programming.java
+      programming.javascript
+      programming.scala
+      programming.haskell
+      provers.lean
+      provers.rocq
+      provers.agda
+      general.teaching
+      general.presenting
+    ];
   };
 
   skills = {
@@ -123,7 +139,7 @@
 
   research = {
     uiuc = {
-      lab = "ITP Lab";
+      lab = "Talia Ringer's ITP Lab";
       pi = {
         name = "Talia Ringer";
         link = "";
@@ -236,12 +252,12 @@
 
   activities = {
     film-score = {
-      organization = "Film Score Orchestra";
+      organization = "Film Score Orchestra at UIUC";
       startDate = "2025-08";
       within = [ config.education.uiuc ];
     };
     intermission = {
-      organization = "The Intermission Orchestra";
+      organization = "The Intermission Orchestra at UCSD";
       startDate = "2022-09";
       endDate = "2025-06";
       within = [ config.education.ucsd ];
