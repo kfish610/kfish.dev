@@ -63,9 +63,12 @@
         };
       };
 
+      typst = pkgs.typst.withPackages (ps: [ ps.fontawesome ]);
+
       TYPST_FONT_PATHS = pkgs.lib.concatStringsSep ":" [
         pkgs.roboto
         pkgs.roboto-slab
+        pkgs.font-awesome
       ];
 
       cv = import ./cv { inherit (nixpkgs) lib; };
@@ -79,7 +82,7 @@
         cv-pdf =
           pkgs.runCommand "cv.pdf"
             {
-              nativeBuildInputs = [ pkgs.typst ];
+              nativeBuildInputs = [ typst ];
               inherit TYPST_FONT_PATHS;
             }
             ''
@@ -94,7 +97,7 @@
         packages = [
           nodejs
           pkgs.nixd
-          pkgs.typst
+          typst
         ]
         ++ hooks.enabledPackages;
         inherit (hooks) shellHook;

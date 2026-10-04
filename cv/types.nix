@@ -14,7 +14,6 @@ let
 
   date = types.strMatching "[0-9]{4}(-[0-9]{2})?";
   url = types.strMatching "https?://.+";
-  urlOrEmpty = types.strMatching "(https?://.+)?";
 
   # Every collection entry gets a read-only id derived from its attribute name.
   idOption =
@@ -117,12 +116,14 @@ let
     endDate = optional date;
   };
 
+  highlights = mkOption {
+    type = types.listOf highlight;
+    default = [ ];
+  };
+
   experience = {
     role = str;
-    highlights = mkOption {
-      type = types.listOf highlight;
-      default = [ ];
-    };
+    inherit highlights;
   }
   // dated;
 in
@@ -159,7 +160,7 @@ in
         entry "edu" (
           {
             name = mkOption { type = shortLong; };
-            link = optional urlOrEmpty;
+            link = mkOption { type = url; };
             location = mkOption { type = location; };
             degrees = mkOption {
               type = types.nonEmptyListOf (
@@ -188,6 +189,7 @@ in
       type = types.attrsOf (
         entry "pub" {
           title = str;
+          link = mkOption { type = url; };
           authors = mkOption { type = types.nonEmptyListOf types.str; };
           venue = str;
           date = mkOption { type = date; };
@@ -209,7 +211,7 @@ in
               type = types.submodule {
                 options = {
                   name = str;
-                  link = optional urlOrEmpty;
+                  link = mkOption { type = url; };
                 };
               };
             };
@@ -228,7 +230,7 @@ in
               type = types.submodule {
                 options = {
                   name = str;
-                  link = optional url;
+                  link = mkOption { type = url; };
                 };
               };
             };
@@ -245,6 +247,7 @@ in
         entry "activity" (
           {
             organization = str;
+            inherit highlights;
           }
           // dated
           // relations [ "edu" ]

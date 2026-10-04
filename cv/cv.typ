@@ -4,6 +4,8 @@
 // project root (the repo), e.g. in `nix develop`:
 //   typst watch --root . cv/cv.typ
 
+#import "@preview/fontawesome:0.6.2": fa-icon
+
 #let data = json(sys.inputs.at("data", default: "/src/lib/generated/cv.json"))
 #let person = data.person
 
@@ -98,23 +100,14 @@
 
 // ---------- Components ----------
 
-// Build an icon from SVG path data
-#let icon(paths) = box(baseline: 0.15em, image(
-  bytes(
-    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' "
-      + "stroke='"
-      + ink.to-hex()
-      + "' stroke-width='2' stroke-linecap='round' "
-      + "stroke-linejoin='round'>"
-      + paths
-      + "</svg>",
-  ),
-  height: 1em,
-))
-#let mail-icon = icon(
-  "<rect x='3' y='5' width='18' height='14' rx='1.5'/><path d='M3.5 6.5 12 13l8.5-6.5'/>",
-)
-#let link-icon = icon("<path d='M10 7H7a5 5 0 0 0 0 10h3M14 7h3a5 5 0 0 1 0 10h-3M8 12h8'/>")
+#let icon(name, ..args) = fa-icon(name, fill: ink, ..args)
+#let mail-icon = icon("envelope")
+#let link-icon = icon("link")
+#let linkedin-icon = icon("linkedin-in")
+#let github-icon = icon("github")
+
+// Icons for `person.links`, by label
+#let link-icons = (GitHub: github-icon, LinkedIn: linkedin-icon)
 
 // Show a link with an underline
 #let ext-link(url, label) = link(url, underline(text(fill: link-color, label)))
@@ -181,21 +174,21 @@
         let c = opt(d, "concentration")
         d.degree + " " + d.field + if c != none { " (" + c.short + ")" }
       })
+      let honors = e.honors.map(emph).join(", ")
       let gpa = opt(e, "gpa")
-      let distinctions = e.honors + if gpa != none { ("GPA " + str(gpa),) } else { () }
-      let highlights = if distinctions.len() > 0 {
-        degrees + (distinctions.join(", "),)
-      } else {
-        degrees
-      }
-      entry(e.name.long, date-range(e), bullets: highlights)
+      let highlights = (
+        degrees + if e.honors.len() > 0 { (honors,) } + if gpa != none { ("GPA " + str(gpa),) }
+      )
+      entry(link(e.link, e.name.long), date-range(e), bullets: highlights)
     })
     .join(),
 )
 
 #let activities-section = section(
   "Activities",
-  newest-first(data.activities).map(a => entry(a.organization, date-range(a))).join(),
+  newest-first(data.activities)
+    .map(a => entry(a.organization, date-range(a), bullets: a.highlights.map(highlight)))
+    .join(),
 )
 
 #let publications-section = section("Publications", {
@@ -207,7 +200,7 @@
     .sorted(key: p => p.date)
     .rev()
     .map(p => [
-      #strong(p.title + ".") \
+      #strong(link(p.link, p.title) + ".") \
       #p.authors.map(a => if a == person.name { emph(a) } else { a }).join(", ") \
       #p.venue #fmt-date(p.date).
       #if p.awards.len() > 0 { emph(p.awards.join(", ") + ".") }
@@ -229,8 +222,9 @@
   newest-first(data.research)
     .map(r => {
       let p = parent(r)
+      let lab = link(r.pi.link, r.lab)
       let where = if p != none { ", " + p.name.short + ", " + p.location.state }
-      entry(r.lab + where, date-range(r), role: r.role, bullets: r.highlights.map(highlight))
+      entry(lab + where, date-range(r), role: r.role, bullets: r.highlights.map(highlight))
     })
     .join(),
 )
@@ -239,7 +233,8 @@
   "Work Experience",
   newest-first(data.work)
     .map(w => {
-      let where = w.organization.name + ", " + w.location.city + ", " + w.location.state
+      let org = link(w.organization.link, w.organization.name)
+      let where = [#org, #w.location.city, #w.location.state]
       entry(where, date-range(w), role: w.role, bullets: w.highlights.map(highlight))
     })
     .join(),
@@ -257,6 +252,10 @@
   #let contacts = (
     (mail-icon, link("mailto:" + person.email, person.email)),
     (link-icon, link(person.website, strip(person.website))),
+    ..person.links.map(l => (
+      link-icons.at(l.label, default: link-icon),
+      link(l.url, strip(l.url)),
+    )),
   )
   #(
     contacts
